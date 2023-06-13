@@ -12,22 +12,10 @@ namespace PemukulPaku.GameServer.Handlers
             GetGrandKeyRsp Rsp = new(){};
 
             //Read DB and return all player dkeys
-
-            /*{
-                "id": 202,
-                "endTime": 1686959895,
-                "unlockLevel": 65,
-                "level": 10,
-                "breachLevel": 2,
-                "activateLevel": 10,
-                "skill": {
-                    "skillId": 20209
-                }
-            }*/
-            Packet.c.Log("Hello from inside gKey");
-                //Rsp.KeyLists.Add();
-                Rsp.retcode = GetGrandKeyRsp.Retcode.Succ;
-            Rsp.IsAll = true;
+            //Rsp.KeyLists.Add();
+            //Rsp.retcode = GetGrandKeyRsp.Retcode.Succ;
+            //Rsp.IsAll = true;
+            Rsp.retcode = GetGrandKeyRsp.Retcode.Fail;
             session.Send(Packet.FromProto(Rsp, CmdId.GetGrandKeyRsp));
         }
     }

@@ -20,7 +20,7 @@ namespace Common.Database
             if (tryAvatar != null) { return tryAvatar; }
 
             AvatarDataExcel? avatarData = AvatarData.GetInstance().FromId(avatarId);
-            if(avatarData == null) { throw new ArgumentException("Invalid avatarId"); }
+            if (avatarData == null) { throw new ArgumentException("Invalid avatarId"); }
 
             Weapon weapon = equipment.AddWeapon(avatarData.InitialWeapon);
 
@@ -44,7 +44,7 @@ namespace Common.Database
                 SkillLists = new()
             };
 
-            if(avatarData.AvatarId == 101)
+            if (avatarData.AvatarId == 101)
             {
                 Stigmata defaultStigmata1 = equipment.AddStigmata(30007);
                 Stigmata defaultStigmata2 = equipment.AddStigmata(30060);
@@ -60,6 +60,19 @@ namespace Common.Database
             collection.InsertOne(avatar);
 
             return avatar;
+        }
+        public static AvatarScheme SwitchSubSkill(int avatarId, int skillId, int subSkillId, uint uid)
+        {
+            AvatarScheme? tryAvatar = collection.AsQueryable().Where(collection => collection.AvatarId == avatarId && collection.OwnerUid == uid).FirstOrDefault();
+            if (tryAvatar == null) { throw new ArgumentException("Invalid avatarId"); }
+            if (tryAvatar is not null) tryAvatar.SkillLists.ForEach(skill =>
+            {
+                if (skill.SkillId == skillId) skill.SubSkillLists.ForEach((subSkill) =>
+                {
+                    if (subSkill.SubSkillId == subSkillId) subSkill.IsMask = !subSkill.IsMask;
+                });
+            });
+            return tryAvatar;
         }
 
         public static void SaveBulk(IEnumerable<AvatarScheme> avatars)
@@ -85,6 +98,19 @@ namespace Common.Database
         public ObjectId Id { get; set; }
         public uint OwnerUid { get; set; }
         public new List<AvatarSkill> SkillLists { get; set; } = new();
+
+        public AvatarScheme SwitchSubSkill(uint skillId, uint subSkillId)
+        {
+            this.SkillLists.ForEach(skill =>
+            {
+                if (skill.SkillId == skillId) skill.SubSkillLists.ForEach(subSkill =>
+                {
+                    if (subSkill.SubSkillId == subSkillId) subSkill.IsMask = !subSkill.IsMask;
+                });
+            });
+            this.Save();
+            return this;
+        }
 
         public void Save()
         {
@@ -199,7 +225,7 @@ namespace Common.Database
                 return;
 
             AvatarSkill? avatarSkill = SkillLists.Where(skill => skill.SkillId == subSkillData.SkillId).FirstOrDefault();
-            if(avatarSkill is not null)
+            if (avatarSkill is not null)
             {
                 AvatarSubSkill? avatarSubSkill = avatarSkill.SubSkillLists.FirstOrDefault(skill => skill.SubSkillId == subSkillData.AvatarSubSkillId);
                 if (avatarSubSkill is not null)

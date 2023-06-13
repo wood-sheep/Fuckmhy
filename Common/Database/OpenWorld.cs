@@ -24,26 +24,14 @@ namespace Common.Database
                 };
             }));
         }
-        
+
         public static List<OpenWorldScheme> FromUid(uint uid)
         {
             List<OpenWorldScheme> Data = collection.AsQueryable().Where(x => x.OwnerUid == uid && ShowMapList.Contains(x.MapId)).ToList();
-            if(Data.Count > 0)
+            if (Data.Count > 0)
                 return Data;
             InitData(uid);
             return collection.AsQueryable().Where(x => x.OwnerUid == uid && ShowMapList.Contains(x.MapId)).ToList(); ;
-        }
-
-        public static void SaveBulk(IEnumerable<OpenWorldScheme> openWorlds)
-        {
-            List<WriteModel<OpenWorldScheme>> ops = new();
-
-            foreach (OpenWorldScheme ow in openWorlds)
-            {
-                ops.Add(ow.SaveOp());
-            }
-
-            collection.BulkWrite(ops);
         }
     }
 
@@ -61,11 +49,6 @@ namespace Common.Database
         public void Save()
         {
             OpenWorld.collection.ReplaceOne(Builders<OpenWorldScheme>.Filter.Eq(x => x.Id, Id), this);
-        }
-
-        public WriteModel<OpenWorldScheme> SaveOp()
-        {
-            return new ReplaceOneModel<OpenWorldScheme>(Builders<OpenWorldScheme>.Filter.Eq(x => x.Id, Id), this);
         }
     }
 }
