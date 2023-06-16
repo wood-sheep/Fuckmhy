@@ -365,3 +365,5 @@ FodyWeavers.xsd
 # Personal
 Common/Resources/**
 !.gitkeep
+
+.exe.stackdump
