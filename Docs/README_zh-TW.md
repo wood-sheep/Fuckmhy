@@ -46,7 +46,7 @@ git clone https://github.com/rafi1212122/PemukulPaku.git
 
 進入PemukulPaku資料夾，將下載的action解壓到該資料夾下
 
-下載資源檔[resources](***REMOVED***
+下載資源檔 resources 並將其解壓放置在`Common\Resources`目錄下
 
 ```
 
@@ -55,10 +55,6 @@ git clone https://github.com/rafi1212122/PemukulPaku.git
 │└———Resources
 
 │└———ExcelOutputAsset
-
-│└———Proto.cs
-
-
 
 
 ```

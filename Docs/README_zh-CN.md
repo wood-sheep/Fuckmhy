@@ -23,13 +23,11 @@ git clone https://github.com/rafi1212122/PemukulPaku.git
 
 从[这里](https://github.com/rafi1212122/PemukulPaku/actions)下载最新action.   
 进入PemukulPaku文件夹，将下载的action解压到该文件夹下  
-下载资源文件 [resources](***REMOVED***  并将其解压放置在 `Common\Resources`目录下   
+下载资源文件 resources 并将其解压放置在 `Common\Resources`目录下   
 ```
 ├───Common
 │   └───Resources
 │       └───ExcelOutputAsset
-│       └───Proto.cs
-
 
 ```
 **运行服务*   
