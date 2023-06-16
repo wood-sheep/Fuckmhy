@@ -35,21 +35,26 @@ namespace PemukulPaku.GameServer.Handlers
                 StigmataRune rune2 = GenerateRune();
                 StigmataRuneGroup group = new() { UniqueId = uid };
 
-                Packet.c.Log(message: $"{rune.ToJson()}{rune2.ToJson()}");
+                //Packet.c.Log(message: $"{rune.ToJson()}{rune2.ToJson()}");
 
                 switch (Data.Type)
                 {
                     case StigmataRefineType.StigmataRefineNormal:
                         if (Data.IsRetry) stigmata.WaitSelectRuneGroupLists.Clear();
                         if (stigmata.SlotNum < 2 && new Random().Next(0, 10) == 9) stigmata.SlotNum++;
-                        group.RuneLists.Add(rune);
+                        if (stigmata.SlotNum >= 1) group.RuneLists.Add(rune);
                         if (stigmata.SlotNum == 2) group.RuneLists.Add(rune2);
                         stigmata.WaitSelectRuneGroupLists.Add(group);
                         Rsp.RuneGroupLists.Add(group);
                         break;
                     case StigmataRefineType.StigmataRefineAddSlot: //broken when doing the 2nd slot for some reason
-                        //stigmata.RuneLists.Add(rune);
-                        stigmata.SlotNum++;
+                        if (stigmata.SlotNum >= 2) throw new Exception("Cannot have more than 2 slots");
+                        else if (stigmata.SlotNum == 1)
+                        {
+                            stigmata.SlotNum++;
+                            group.RuneLists.Add(stigmata.RuneLists.FirstOrDefault());
+                        }
+                        else stigmata.SlotNum++;
                         group.RuneLists.Add(rune);
                         stigmata.WaitSelectRuneGroupLists.Add(group);
                         Rsp.RuneGroupLists.Add(group);
@@ -76,19 +81,18 @@ namespace PemukulPaku.GameServer.Handlers
             }
         }
 
-        private StigmataRune GenerateRune()
-            => new()
-            {
-                RuneId = GenerateAffixId(),
-                StrengthPercent = GenerateAffixStrength()
-            };
+        private StigmataRune GenerateRune(int min = 1, int max = 4) => new()
+        {
+            RuneId = GenerateAffixId(min,max),
+            StrengthPercent = GenerateAffixStrength()
+        };
         private StigmataRune GenerateRuneSpecial(uint slot, uint id = 1) => new()
         {
             RuneId = GenerateAffixIdSpecial(id, slot),
             StrengthPercent = GenerateAffixStrengthSpecial(id, slot)
         };
 
-        private uint GenerateAffixId(int min = 1, int max = 4)
+        private uint GenerateAffixId(int min, int max)
             => ((uint)AffixIds[new Random().Next(0, AffixIds.Length - 1)] + (uint)new Random().Next(
                 min < max && min > 0 ? min : 1, max > min && max < 5 ? max : 4
             ));
@@ -103,7 +107,6 @@ namespace PemukulPaku.GameServer.Handlers
             switch (id)
             {
                 //case 3:
-                //case 14:
                 case 14:
                     return 30013; //Max HP for now. :P
                 //Attribute ATK
@@ -140,8 +143,8 @@ namespace PemukulPaku.GameServer.Handlers
             }
         }
         //Specials (ID, Type, Roll) | (Affix ID, Strength)
-        //3 Offensive Random    |   
-        //14 Support Random     |   
+        //3 Offensive Random    |   IDs that start with 3
+        //14 Support Random     |   IDs that start with 4? or 5
         //15 SP -2.7% .4/sp     |   (50043, 59) (50033, 45)
         //4  BIO  23            |   30063, 100
         //5  MECH 23            |   30073, 100
